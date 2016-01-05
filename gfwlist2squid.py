@@ -29,11 +29,11 @@
 
 # Example:
 # china-mmm.jp.net                      -> china\-mmm\.jp\.net
-# ||china-mmm.net                       -> ^china\-mmm\.net
+# ||china-mmm.net                       -> (.+\.)?china\-mmm\.net
 # |http://85.17.73.31/                  -> ^85\.17\.73\.31$
 # 21andy.com/blog                       -> 21andy\.com$
 # |http://cdn*.abc.com/                 -> ^cdn(.*)\.abc\.com$
-# /^https?:\/\/[^\/]+blogspot\.(.*)/    -> ^blogspot\.(.*)
+# /^https?:\/\/[^\/]+blogspot\.(.*)/    -> (.+\.)?blogspot\.(.*)
 # @@||baidu.com                         -> ^baidu\.com
 
 import urllib2
@@ -71,7 +71,7 @@ def convert_line(line):
   if line[0] == '/' and line[-1] == '/':
     #simple remove https?:\/\/[^\/]+
     rline = line[1:-1]
-    rline = rline.replace(r'https?:\/\/[^\/]+', '')
+    rline = rline.replace(r'^https?:\/\/[^\/]+', r'(.+\.)?')
     return rline
   
   #normal rules
@@ -79,7 +79,7 @@ def convert_line(line):
     #add ^ at beginning    
     rline = line[2:]
     rline = url2domain(rline)
-    return '^' + rline
+    return '(.+\.)?' + rline
   elif line.startswith('|'):
     rline = line[1:]
     rline = url2domain(rline)
