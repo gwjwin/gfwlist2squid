@@ -32,7 +32,7 @@
 # ||china-mmm.net                       -> ^china\-mmm\.net
 # |http://85.17.73.31/                  -> ^85\.17\.73\.31$
 # 21andy.com/blog                       -> 21andy\.com$
-# |http://cdn*.abc.com/                 -> ^cdn(.*)\.abc\.com
+# |http://cdn*.abc.com/                 -> ^cdn(.*)\.abc\.com$
 # /^https?:\/\/[^\/]+blogspot\.(.*)/    -> ^blogspot\.(.*)
 # @@||baidu.com                         -> ^baidu\.com
 
@@ -55,13 +55,12 @@ def url2domain(s):
     s = s[8:]
   #remove url path
   i = s.find('/')
-  if (i >= 0){
-    s = s[:i]
-  }
+  if (i >= 0):
+    s = s[0:i+1]
   #escape regex chars
   r = re.escape(s)
   r = r.replace(r'\*', '(.*)')
-  if (r.endswith(r'\/'))
+  if (r.endswith(r'\/')):
     r = r[:-2] + '$'
   return r
 
@@ -112,21 +111,30 @@ def convert(gfwlist):
             
 def main():
 
-  #set read gwflist from URL or FILE
-  isFromURL = 1
+  #set read gwflist from 0=URL or 1=FILE or 2=Plain-text FILE
+  rMode = 0
   
-  if (isFromURL):
+  if rMode == 0:
     #read from URL
     src = urllib2.urlopen(GWFLIST_URL).read()
-  else:
+    src = b64decode(src)
+    decode = open(DECODE_FILE, 'w')
+    decode.write(src)
+    convert(src)
+  elif rMode == 1:
     #read from FILE
-    open from local file
     src = open(GWFLIST_FILE, 'r').read()
-
-  src = b64decode(src)
-  decode = open(DECODE_FILE, 'w')
-  decode.write(src)
-  convert(src)
+    src = b64decode(src)
+    decode = open(DECODE_FILE, 'w')
+    decode.write(src)
+    convert(src)
+  elif rMode == 2:
+    #read from FILE
+    src = open(DECODE_FILE, 'r').read()
+    convert(src)
+  else:
+    return
+    
              
 if __name__ == '__main__':
   main()
