@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 #encoding: utf-8
 
+# forked from sorz/gfwlist2regex.py
+
 # gwflist | Adblock Format 
 # https://adblockplus.org/en/filters
 
-# squid 
-# 由于squid不关心协议，只关心域名，所以||标记是可以忽略的
+# squid rules
+# squid only matchs DOMAIN, not URL, so the rules in gwflist should changed to DOMAIN.
 
 # Example:
 # china-mmm.jp.net                      -> china\-mmm\.jp\.net
@@ -16,9 +18,22 @@
 # /^https?:\/\/[^\/]+blogspot\.(.*)/    -> ^blogspot\.(.*)
 
 # Usage:
-# Add following lines into squid.conf:
+# Add following lines into squid.conf: (squid v2.7)
+# ----
 # acl whitelist dstdom_regex 'whitelist.url_regex.lst'
 # acl balcklist dstdom_regex 'balcklist.url_regex.lst'
+# prefer_direct on
+# always_direct allow whitelist
+# never_direct  allow balcklist
+# cache_peer 127.0.0.1 parent 48081 0 name=ss1 round-robin
+# cache_peer 127.0.0.1 parent 48082 0 name=ss2 round-robin
+# cache_peer_access ss1 deny whitelist
+# cache_peer_access ss2 deny whitelist
+# cache_peer_access ss1 allow balcklist
+# cache_peer_access ss1 allow balcklist
+# forwarded_for transparent
+# via off
+# ----
 
 import urllib2
 import re
@@ -26,7 +41,7 @@ from base64 import b64decode
 
 
 LIST_URL   = 'https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt'
-DECODE_FILE  = 'decode.txt'
+DECODE_FILE  = 'gwflist.decode.txt'
 WHITE_FILE = 'whitelist.url_regex.lst'
 BLACK_FILE = 'balcklist.url_regex.lst'
 
