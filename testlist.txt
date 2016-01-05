@@ -1,0 +1,8 @@
+! - Test File
+china-mmm.jp.net
+||china-mmm.net
+|http://85.17.73.31/
+21andy.com/blog
+|http://cdn*.abc.com/
+/^https?:\/\/[^\/]+blogspot\.(.*)/
+@@||baidu.com
